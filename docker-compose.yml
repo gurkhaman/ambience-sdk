@@ -1,0 +1,25 @@
+services:
+  vllm-phi4:
+    image: vllm/vllm-openai:latest
+    container_name: ambience-vllm-phi4
+    runtime: nvidia
+    environment:
+      - HUGGING_FACE_HUB_TOKEN=${HUGGING_FACE_HUB_TOKEN:-}
+    ports:
+      - "8000:8000"
+    volumes:
+      - ~/.cache/huggingface:/root/.cache/huggingface
+    ipc: host
+    command: >
+      --model microsoft/Phi-4-mini-instruct
+      --dtype auto
+      --max-model-len 32768
+      --gpu-memory-utilization 0.9
+      --trust-remote-code
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['2']
+              capabilities: [gpu]
